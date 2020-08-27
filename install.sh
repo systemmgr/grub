@@ -72,8 +72,7 @@ APPVERSION="$(curl -LSs ${SYSTEMMGRREPO:-https://github.com/systemmgr}/$APPNAME/
 
 # Set options
 
-APPDIR="$SYSSHARE/CasjaysDev/$APPNAME"
-PLUGDIR="$SYSSHARE/$APPNAME/${PLUGNAME:-plugins}"
+APPDIR="$HOMEDIR/$APPNAME"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -143,22 +142,6 @@ else
         "backupapp && \
          git_clone -q $REPO/$APPNAME $APPDIR" \
         "Installing $APPNAME configurations"
-fi
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# Plugins
-
-if [ "$PLUGNAME" != "" ]; then
-    if [ -d "$PLUGDIR"/.git ]; then
-        execute \
-            "git_update $PLUGDIR" \
-            "Updating $PLUGNAME"
-    else
-        execute \
-            "git_clone $PLUGINREPO $PLUGDIR" \
-            "Installing $PLUGNAME"
-    fi
 fi
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
