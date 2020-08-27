@@ -20,7 +20,6 @@ sudo bash -c "$(curl -LSs https://github.com/systemmgr/grub/raw/master/install.s
 Manual install:
 ```
 sudo git clone https://github.com/systemmgr/grub "/usr/local/etc/grub"
-sudo ln -sf /usr/local/etc/ssl /stc/ssl/CA/CasjaysDev
 ```
   
   
