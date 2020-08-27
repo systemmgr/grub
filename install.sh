@@ -11,7 +11,7 @@ HOME="${USER_HOME:-${HOME}}"
 # @Created         : Wed, Aug 09, 2020, 02:00 EST
 # @License         : WTFPL
 # @Copyright       : Copyright (c) CasjaysDev
-# @Description     : installer script for scripts
+# @Description     : installer script for grub
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -90,12 +90,12 @@ sudoreq # sudo required
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 APP="$APPINSTNAME "
-APP+=" "
-PERL=" "
-PYTH=" "
+APP+=""
+PERL=""
+PYTH=""
 PIPS=""
 CPAN=""
-GEMS="mdless "
+GEMS=""
 
 # install packages - useful for package that have the same name on all oses
 install_packages $APP
