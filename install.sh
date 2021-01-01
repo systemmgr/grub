@@ -103,7 +103,7 @@ failexitcode
 # run post install scripts
 
 run_postinst() {
-  systemmgr_run_post
+  systemmgr_run_postinst
   if [ ! -f "$APPDIR/.inst" ] && [ ! -L /boot/grub/themes/default ] && cmd_exists grub-mkconfig &&
     [ -f /boot/grub/grub.cfg ] && [ -f /etc/default/grub ]; then
     GRUB="/usr/sbin/grub-mkconfig"
