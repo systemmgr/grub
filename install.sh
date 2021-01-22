@@ -48,9 +48,10 @@ scripts_check
 # Defaults
 APPNAME="${APPNAME:-grub}"
 APPDIR="/usr/local/etc/$APPNAME"
+INSTDIR="${INSTDIR}"
 REPO="${SYSTEMMGRREPO:-https://github.com/systemmgr}/${APPNAME}"
 REPORAW="${REPORAW:-$REPO/raw}"
-APPVERSION="$(curl -LSs $REPORAW/master/version.txt)"
+APPVERSION="$(__appversion $REPORAW/master/version.txt)"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -63,6 +64,13 @@ systemmgr_install
 # Script options IE: --help
 
 show_optvars "$@"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Requires root - no point in continuing
+
+sudoreq # sudo required
+#sudorun  # sudo optional
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -84,15 +92,15 @@ ensure_perms
 
 # Main progam
 
-if [ -d "$APPDIR/.git" ]; then
+if [ -d "$INSTDIR/.git" ]; then
   execute \
-  "git_update $APPDIR" \
-  "Updating $APPNAME configurations"
+    "git_update $INSTDIR" \
+    "Updating $APPNAME configurations"
 else
   execute \
-  "backupapp && \
-        git_clone -q $REPO/$APPNAME $APPDIR" \
-  "Installing $APPNAME configurations"
+    "backupapp && \
+        git_clone -q $REPO/$APPNAME $INSTDIR" \
+    "Installing $APPNAME configurations"
 fi
 
 # exit on fail
@@ -104,36 +112,36 @@ failexitcode
 
 run_postinst() {
   systemmgr_run_postinst
-  if [ ! -f "$APPDIR/.inst" ] && [ ! -L /boot/grub/themes/default ] && cmd_exists grub-mkconfig &&
+  if [ ! -f "$INSTDIR/.inst" ] && [ ! -L /boot/grub/themes/default ] && cmd_exists grub-mkconfig &&
     [ -f /boot/grub/grub.cfg ] && [ -f /etc/default/grub ]; then
     GRUB="/usr/sbin/grub-mkconfig"
     mkd /boot/grub/themes
     cp_rf /etc/default/grub /etc/default/grub.bak
-    cp_rf $APPDIR/themes/* /boot/grub/themes
-    cp_rf $APPDIR/grub /etc/default/grub
+    cp_rf "$APPDIR/themes/." /boot/grub/themes/
+    cp_rf "$APPDIR/grub" /etc/default/grub
     ln_sf /boot/grub/themes/poly-dark /boot/grub/themes/default
     sed -i 's|^\(GRUB_TERMINAL\w*=.*\)|#\1|' /etc/default/grub
     sed -i 's|grubdir|grub|g' /etc/default/grub
     ${GRUB} -o /boot/grub/grub.cfg
 
-  elif [ ! -f $APPDIR/.inst ] && [ ! -L /boot/grub2/themes/default ] && cmd_exists grub-mkconfig &&
+  elif [ ! -f "$INSTDIR/.inst" ] && [ ! -L /boot/grub2/themes/default ] && cmd_exists grub-mkconfig &&
     [ -f /boot/grub2/grub.cfg ] && [ -f /etc/default/grub ]; then
     GRUB="/usr/sbin/grub2-mkconfig"
     mkd /boot/grub2/themes
     cp_rf /etc/default/grub /etc/default/grub.bak
-    cp_rf $APPDIR/themes/* /boot/grub2/themes
-    cp_rf $APPDIR/grub /etc/default/grub
+    cp_rf "$INSTDIR/themes/." /boot/grub2/themes/
+    cp_rf "$INSTDIR/grub" /etc/default/grub
     ln_sf /boot/grub2/themes/poly-dark /boot/grub2/themes/default
     sed -i 's|^\(GRUB_TERMINAL\w*=.*\)|#\1|' /etc/default/grub
     sed -i 's|grubdir|grub2|g' /etc/default/grub
     ${GRUB} -o /boot/grub2/grub.cfg
   fi
-  touch $APPDIR/.inst
+  touch "$INSTDIR/.inst"
 }
 
 execute \
-"run_postinst" \
-"Running post install scripts"
+  "run_postinst" \
+  "Running post install scripts"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
