@@ -47,11 +47,12 @@ scripts_check
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Defaults
 APPNAME="${APPNAME:-grub}"
-APPDIR="/usr/local/etc/${APPNAME}"
-INSTDIR="${APPDIR}"
-REPO="${SYSTEMMGRREPO:-https://github.com/systemmgr/$APPNAME}"
-REPORAW="${REPORAW:-$REPO/raw}"
-APPVERSION="$(__appversion "$REPORAW/master/version.txt")"
+APPDIR="/usr/local/etc/$APPNAME"
+INSTDIR="$SYSSHARE/CasjaysDev/$SCRIPTS_PREFIX/$APPNAME"
+REPO_BRANCH=${GIT_REPO_BRANCH:-master}
+REPO="https://github.com/systemmgr/$APPNAME"
+REPORAW="$REPO/raw/$GIT_REPO_BRANCH"
+APPVERSION="$(__appversion "$REPORAW/version.txt")"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Require a version higher than
 systemmgr_req_version "$APPVERSION"
@@ -116,7 +117,7 @@ if __am_i_online; then
   if [ -d "$INSTDIR/.git" ]; then
     execute "git_update $INSTDIR" "Updating $APPNAME configurations"
   else
-    execute "git_clone $REPO/$APPNAME $INSTDIR" "Installing $APPNAME configurations"
+    execute "git_clone $REPO $INSTDIR" "Installing $APPNAME configurations"
   fi
   # exit on fail
   failexitcode $? "Git has failed"
