@@ -48,11 +48,15 @@ scripts_check
 # Defaults
 APPNAME="${APPNAME:-grub}"
 APPDIR="/usr/local/etc/$APPNAME"
-INSTDIR="$SYSSHARE/CasjaysDev/$SCRIPTS_PREFIX/$APPNAME"
-REPO_BRANCH=${GIT_REPO_BRANCH:-master}
-REPO="https://github.com/systemmgr/$APPNAME"
-REPORAW="$REPO/raw/$GIT_REPO_BRANCH"
+INSTDIR="$SYSSHARE/CasjaysDev/systemmgr/$APPNAME"
+REPO_BRANCH="${GIT_REPO_BRANCH:-master}"
+REPO="${SYSTEMMGRREPO:-https://github.com/systemmgr}/$APPNAME"
+REPORAW="$REPO/raw/$REPO_BRANCH"
 APPVERSION="$(__appversion "$REPORAW/version.txt")"
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Setup plugins
+PLUGNAMES=""
+PLUGDIR="${SHARE:-$HOME/.local/share}/$APPNAME"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Require a version higher than
 systemmgr_req_version "$APPVERSION"
@@ -65,7 +69,10 @@ show_optvars "$@"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Requires root - no point in continuing
 sudoreq # sudo required
-#sudorun  # sudo optional
+#sudorun # sudo optional
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Do not update - add --force to overwrite
+#installer_noupdate "$@"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # initialize the installer
 systemmgr_run_init
@@ -158,6 +165,10 @@ execute "run_postinst" "Running post install scripts"
 # create version file
 systemmgr_install_version
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# exit
+# run exit function
 run_exit
-# end
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# End application
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# lets exit with code
+exit ${exitCode:-$?}
