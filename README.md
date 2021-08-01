@@ -5,13 +5,13 @@ GRUB (GRand Unified Bootloader) is a multi-boot loader
 Requires:  
 
 ```shell
-sudo bash -c "$(curl -LSs https://github.com/systemmgr/installer/raw/master/install.sh)"
+sudo bash -c "$(curl -LSs https://github.com/systemmgr/installer/raw/main/install.sh)"
 ```
 
 Automatic:
 
 ```shell
-bash -c "$(curl -LSs https://github.com/systemmgr/grub/raw/master/install.sh)"
+bash -c "$(curl -LSs https://github.com/systemmgr/grub/raw/main/install.sh)"
 ```
 
 Install:
