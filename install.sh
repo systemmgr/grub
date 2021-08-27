@@ -133,8 +133,7 @@ fi
 # run post install scripts
 run_postinst() {
   systemmgr_run_post
-  if [ ! -f "$INSTDIR/.inst" ] && [ ! -L /boot/grub/themes/default ] && cmd_exists grub-mkconfig &&
-    [ -f /boot/grub/grub.cfg ] && [ -f /etc/default/grub ]; then
+  if [ ! -L /boot/grub/themes/default ] && cmd_exists grub-mkconfig && [ -f /boot/grub/grub.cfg ] && [ -f /etc/default/grub ]; then
     GRUB="/usr/sbin/grub-mkconfig"
     mkd /boot/grub/themes
     cp_rf /etc/default/grub /etc/default/grub.bak
@@ -145,9 +144,8 @@ run_postinst() {
     sed -i 's|grubdir|grub|g' /etc/default/grub
     ${GRUB} -o /boot/grub/grub.cfg
 
-  elif [ ! -f "$INSTDIR/.inst" ] && [ ! -L /boot/grub2/themes/default ] && cmd_exists grub-mkconfig &&
-    [ -f /boot/grub2/grub.cfg ] && [ -f /etc/default/grub ]; then
-    GRUB="/usr/sbin/grub2-mkconfig"
+  elif [ ! -L /boot/grub2/themes/default ] && { cmd_exists grub2-mkconfig || cmd_exists grub-mkconfig; } && [ -f /boot/grub2/grub.cfg ] && [ -f /etc/default/grub ]; then
+    GRUB="$(builtin type -P /usr/sbin/grub2-mkconfig 2>/dev/null || builtin type -P /usr/sbin/grub-mkconfig)"
     mkd /boot/grub2/themes
     cp_rf /etc/default/grub /etc/default/grub.bak
     cp_rf "$APPDIR/themes/." /boot/grub2/themes/
