@@ -1,13 +1,13 @@
 GRUB_TIMEOUT="10"
-GRUB_DISTRIBUTOR=`lsb_release -s -d`
+GRUB_DISTRIBUTOR=$(lsb_release -s -d)
 GRUB_DEFAULT="0"
 GRUB_DISABLE_SUBMENU="true"
 GRUB_TERMINAL="gfxterm"
 GRUB_TERMINAL_OUTPUT="gfxterm"
-#GRUB_CMDLINE_LINUX="biosdevname=0 net.ifnames=0 quiet consoleblank=0 hpsa.hpsa_simple_mode=1 hpsa.hpsa_allow_any=1"
-GRUB_CMDLINE_LINUX="biosdevname=0 net.ifnames=0 quiet consoleblank=0"
+#GRUB_CMDLINE_LINUX="biosdevname=0 net.ifnames=0 quiet consoleblank=0 hpsa.hpsa_simple_mode=1 hpsa.hpsa_allow_any=1 systemd.unified_cgroup_hierarchy=0"
+GRUB_CMDLINE_LINUX="biosdevname=0 net.ifnames=0 quiet consoleblank=0 systemd.unified_cgroup_hierarchy=0"
 GRUB_DISABLE_RECOVERY="true"
-GRUB_GFXMODE="1920x1080x32,1024x1366x32,1024x768x32,auto"
+GRUB_GFXMODE="1920x1080x32,1366x768x32,1366x1024x32,1024x768x32,auto"
 GRUB_COLOR_NORMAL="light-blue/black"
 GRUB_COLOR_HIGHLIGHT="light-cyan/blue"
 GRUB_DISABLE_LINUX_UUID="true"
