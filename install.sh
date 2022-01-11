@@ -49,7 +49,7 @@ scripts_check
 APPNAME="${APPNAME:-grub}"
 APPDIR="/usr/local/etc/$APPNAME"
 INSTDIR="$SYSSHARE/CasjaysDev/systemmgr/$APPNAME"
-REPO_BRANCH="${GIT_REPO_BRANCH:-master}"
+REPO_BRANCH="${GIT_REPO_BRANCH:-main}"
 REPO="${SYSTEMMGRREPO:-https://github.com/systemmgr}/$APPNAME"
 REPORAW="$REPO/raw/$REPO_BRANCH"
 APPVERSION="$(__appversion "$REPORAW/version.txt")"
