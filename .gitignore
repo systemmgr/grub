@@ -2,3 +2,5 @@
 ignoredirmessage
 
 .inst
+# ignore commit message
+.gitcommit
