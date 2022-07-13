@@ -133,30 +133,20 @@ fi
 # run post install scripts
 run_postinst() {
   systemmgr_run_post
-  [ -f "$INSTDIR/.inst" ] && return
+  [ -z "$FORCE_INSTALL" ] && [ -f "$INSTDIR/.installed" ] && return 0
   GRUB="$(builtin type -P grub2-mkconfig 2>/dev/null || builtin type -P grub-mkconfig 2>/dev/null || echo '')"
-  if [[ -f "$GRUB" ]] && [ -f /boot/grub/grub.cfg ] && [ -f /etc/default/grub ]; then
-    GRUB="/usr/sbin/grub-mkconfig"
-    mkd /boot/grub/themes
-    cp_rf /etc/default/grub /etc/default/grub.bak
-    cp_rf "$APPDIR/themes/." /boot/grub/themes/
+  GRUB_CONF="$(find /boot -type f -name 'grub.cfg' 2>/dev/null | grep '^')"
+  GRUB_HOME="$(dirname "$GRUB_CONF" 2>/dev/null | grep '^')"
+  if [[ -f "$GRUB" ]] && [ -f "$GRUB_CONF" ] && [ -f "/etc/default/grub" ]; then
+    mkd "$GRUB_HOME/themes"
+    cp_rf "/etc/default/grub" "/etc/default/grub.bak"
+    cp_rf "$APPDIR/themes/." "$GRUB_HOME/themes/"
     cp_rf "$APPDIR/grub" /etc/default/grub
     sed -i 's|^\(GRUB_TERMINAL\w*=.*\)|#\1|' /etc/default/grub
     sed -i 's|grubdir|grub|g' /etc/default/grub
-    [ -L /boot/grub/themes/default ] || ln_sf "/boot/grub/themes/poly-dark" "/boot/grub/themes/default"
-    ${GRUB} -o /boot/grub/grub.cfg
-
-  elif [[ -f "$GRUB" ]] && [ -f /boot/grub2/grub.cfg ] && [ -f /etc/default/grub ]; then
-    mkd /boot/grub2/themes
-    cp_rf /etc/default/grub /etc/default/grub.bak
-    cp_rf "$APPDIR/themes/." /boot/grub2/themes/
-    cp_rf "$APPDIR/grub" /etc/default/grub
-    sed -i 's|^\(GRUB_TERMINAL\w*=.*\)|#\1|' /etc/default/grub
-    sed -i 's|grubdir|grub2|g' /etc/default/grub
-    [ -L /boot/grub2/themes/default ] || ln_sf "/boot/grub2/themes/poly-dark" "/boot/grub2/themes/default"
-    ${GRUB} -o /boot/grub2/grub.cfg
+    [ -L "$GRUB_HOME/themes/default" ] || ln_sf "$GRUB_HOME/themes/poly-dark" "$GRUB_HOME/themes/default"
+    ${GRUB} -o "$GRUB_HOME/grub.cfg"
   fi
-  touch "$INSTDIR/.inst"
 }
 #
 execute "run_postinst" "Running post install scripts"
