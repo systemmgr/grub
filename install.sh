@@ -134,19 +134,20 @@ fi
 # run post install scripts
 run_postinst() {
   systemmgr_run_post
-  [ -z "$FORCE_INSTALL" ] && [ -f "$INSTDIR/.installed" ] && return 0
   GRUB="$(builtin type -P grub2-mkconfig 2>/dev/null || builtin type -P grub-mkconfig 2>/dev/null || echo '')"
   GRUB_CONF="$(find /boot -type f -name 'grub.cfg' 2>/dev/null | grep '^')"
   GRUB_HOME="$(dirname "$GRUB_CONF" 2>/dev/null | grep '^')"
   DISTRO_NAME=$(grep -sE --no-filename '^NAME=|^DISTRIB_ID=|^ID=' /etc/*-release | head -n1 | sed 's|.*=||g' | grep '^' || echo "Linux")
-  if [[ -f "$GRUB" ]] && [ -f "$GRUB_CONF" ] && [ -f "/etc/default/grub" ]; then
+  if [ -f "$GRUB" ] && [ -f "$GRUB_CONF" ] && [ -f "/etc/default/grub" ]; then
     mkd "$GRUB_HOME/themes"
-    cp_rf "/etc/default/grub" "/etc/default/grub.bak"
-    cp_rf "$APPDIR/themes/." "$GRUB_HOME/themes/"
-    cp_rf "$APPDIR/grub" "/etc/default/grub"
-    sed -i 's|grubdir|grub|g' "/etc/default/grub"
+    if [ -n "$FORCE_INSTALL" ] && [ ! -f "$INSTDIR/.installed" ]; then
+      cp_rf "/etc/default/grub" "/etc/default/grub.bak"
+      cp_rf "$APPDIR/themes/." "$GRUB_HOME/themes/"
+      cp_rf "$APPDIR/grub" "/etc/default/grub"
+      sed -i 's|grubdir|grub|g' "/etc/default/grub"
+    fi
     sed -i 's|^\(GRUB_TERMINAL\w*=.*\)|#\1|' "/etc/default/grub"
-    sed -i "s|GRUB_DISTRIBUTOR=.*|GRUB_DISTRIBUTOR=\"$DISTRO_NAME\"|g" "/etc/default/grub"
+    sed -i "s|^GRUB_DISTRIBUTOR=.*|GRUB_DISTRIBUTOR=\"$DISTRO_NAME\"|g" "/etc/default/grub"
     [ -L "$GRUB_HOME/themes/default" ] || ln_sf "$GRUB_HOME/themes/poly-dark" "$GRUB_HOME/themes/default"
     ${GRUB} -o "$GRUB_HOME/grub.cfg"
   fi
