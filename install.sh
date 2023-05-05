@@ -145,9 +145,9 @@ run_postinst() {
       cp_rf "$APPDIR/themes/." "$GRUB_HOME/themes/"
       cp_rf "$APPDIR/grub" "/etc/default/grub"
       sed -i 's|grubdir|grub|g' "/etc/default/grub"
+      sed -i 's|^\(GRUB_TERMINAL\w*=.*\)|#\1|' "/etc/default/grub"
+      sed -i "s|^GRUB_DISTRIBUTOR=.*|GRUB_DISTRIBUTOR=\"$DISTRO_NAME\"|g" "/etc/default/grub"
     fi
-    sed -i 's|^\(GRUB_TERMINAL\w*=.*\)|#\1|' "/etc/default/grub"
-    sed -i "s|^GRUB_DISTRIBUTOR=.*|GRUB_DISTRIBUTOR=\"$DISTRO_NAME\"|g" "/etc/default/grub"
     [ -L "$GRUB_HOME/themes/default" ] || ln_sf "$GRUB_HOME/themes/poly-dark" "$GRUB_HOME/themes/default"
     ${GRUB} -o "$GRUB_HOME/grub.cfg"
   fi
