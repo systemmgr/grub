@@ -135,7 +135,7 @@ fi
 run_postinst() {
   systemmgr_run_post
   GRUB="$(builtin type -P grub2-mkconfig 2>/dev/null || builtin type -P grub-mkconfig 2>/dev/null || false)"
-  GRUB_CONF="$(find /boot -type f -iname '*grub*' 2>/dev/null | grep -F '.cfg' | grep '^' || false)"
+  GRUB_CONF="$(find /boot -type f -iname '*grub*' 2>/dev/null | grep -F '.cfg' | grep -Ev '\.rpmnew|\.rpmsave|\.bak' | grep '^' || false)"
   GRUB_HOME="$([ -n "$GRUB_CONF" ] && dirname "$GRUB_CONF" 2>/dev/null | grep '^' || false)"
   DISTRO_NAME="$(grep -sE --no-filename '^NAME=|^DISTRIB_ID=|^ID=' /etc/*-release | head -n1 | sed 's|.*=||g;s|"||g' | awk -F ' ' '{print $1}' | grep '^' || echo "Linux")"
   if [ -n "$GRUB" ] && [ -n "$GRUB_CONF" ] && [ -f "/etc/default/grub" ]; then
