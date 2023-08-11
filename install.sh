@@ -136,20 +136,29 @@ run_postinst() {
   systemmgr_run_post
   GRUB="$(builtin type -P grub2-mkconfig 2>/dev/null || builtin type -P grub-mkconfig 2>/dev/null || false)"
   GRUB_CONF="$(find /boot -type f -iname '*grub*' 2>/dev/null | grep -F '.cfg' | grep -Ev '\.rpmnew|\.rpmsave|\.bak' | grep '^' || false)"
-  GRUB_HOME="$([ -n "$GRUB_CONF" ] && dirname "$GRUB_CONF" 2>/dev/null | grep '^' || false)"
   DISTRO_NAME="$(grep -sE --no-filename '^NAME=|^DISTRIB_ID=|^ID=' /etc/*-release | head -n1 | sed 's|.*=||g;s|"||g' | awk -F ' ' '{print $1}' | grep '^' || echo "Linux")"
+  if [ -d "/boot/grub2" ]; then
+    GRUB_HOME="/boot/grub2"
+  elif [ -d "/boot/grub" ]; then
+    GRUB_HOME="/boot/grub"
+  fi
   if [ -n "$GRUB" ] && [ -n "$GRUB_CONF" ] && [ -f "/etc/default/grub" ]; then
-    mkd "$GRUB_HOME/themes"
+    if [ -n "$GRUB_HOME" ]; then
+      mkd "$GRUB_HOME/themes"
+      [ -d "$GRUB_HOME/themes/default" ] && rm -Rf "$GRUB_HOME/themes/default"
+      [ -L "$GRUB_HOME/themes/default" ] || ln_sf "$GRUB_HOME/themes/poly-dark" "$GRUB_HOME/themes/default"
+    fi
     if [ -n "$FORCE_INSTALL" ] || [ ! -f "$INSTDIR/.installed" ]; then
       cp_rf "/etc/default/grub" "$APPDIR/grub.bak"
       cp_rf "$APPDIR/themes/." "$GRUB_HOME/themes/"
       cp_rf "$APPDIR/grub" "/etc/default/grub"
-      sed -i 's|grubdir|grub|g' "/etc/default/grub"
       sed -i 's|^\(GRUB_TERMINAL\w*=.*\)|#\1|' "/etc/default/grub"
+      sed -i "s|REPLACE_GRUB_HOME|$GRUB_HOME|g" "/etc/default/grub"
       sed -i "s|^GRUB_DISTRIBUTOR=.*|GRUB_DISTRIBUTOR=\"$DISTRO_NAME\"|g" "/etc/default/grub"
     fi
-    [ -L "$GRUB_HOME/themes/default" ] || ln_sf "$GRUB_HOME/themes/poly-dark" "$GRUB_HOME/themes/default"
-    ${GRUB} -o "$GRUB_HOME/grub.cfg"
+    for cfg in $GRUB_CONF; do
+      ${GRUB} -o "$cfg"
+    done
   fi
 }
 #
